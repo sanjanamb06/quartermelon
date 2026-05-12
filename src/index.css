@@ -1,0 +1,157 @@
+@font-face {
+  font-family: 'Gemilion';
+  src: url('./assets/fonts/Gemilion.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PlusJakartaSans';
+  src: url('./assets/fonts/PlusJakartaSans-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 30 33% 97%;
+    --foreground: 340 20% 15%;
+
+    --card: 30 30% 99%;
+    --card-foreground: 340 20% 15%;
+
+    --popover: 30 30% 99%;
+    --popover-foreground: 340 20% 15%;
+
+    --primary: 348 72% 52%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 145 45% 42%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 30 20% 93%;
+    --muted-foreground: 340 10% 45%;
+
+    --accent: 348 72% 95%;
+    --accent-foreground: 348 72% 40%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 30 15% 88%;
+    --input: 30 15% 88%;
+    --ring: 348 72% 52%;
+
+    --radius: 1rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    --melon: 348 72% 52%;
+    --melon-light: 348 72% 95%;
+    --green: 145 45% 42%;
+    --green-light: 145 40% 92%;
+    --cream: 30 33% 97%;
+    --cream-dark: 30 20% 90%;
+
+    --font-heading: 'Gemilion', serif;
+    --font-body: 'PlusJakartaSans', sans-serif;
+  }
+
+  .dark {
+    --background: 340 20% 8%;
+    --foreground: 30 20% 95%;
+    --card: 340 20% 10%;
+    --card-foreground: 30 20% 95%;
+    --popover: 340 20% 10%;
+    --popover-foreground: 30 20% 95%;
+    --primary: 348 72% 58%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 145 45% 48%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 340 15% 15%;
+    --muted-foreground: 340 10% 60%;
+    --accent: 348 50% 18%;
+    --accent-foreground: 348 72% 80%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 340 15% 18%;
+    --input: 340 15% 18%;
+    --ring: 348 72% 58%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+  }
+}
+
+@layer utilities {
+  .nav-link-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+  .nav-link-underline {
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    height: 2px;
+    width: 0%;
+    background: #c3d92d;
+    transition: width 220ms ease;
+    pointer-events: none;
+  }
+  .nav-link-underline-active {
+    width: 100%;
+  }
+
+  .animate-fade-up {
+    animation: fadeUp 0.6s ease-out both;
+  }
+  .animate-fade-up-delay-1 {
+    animation: fadeUp 0.6s ease-out 0.1s both;
+  }
+  .animate-fade-up-delay-2 {
+    animation: fadeUp 0.6s ease-out 0.2s both;
+  }
+  .animate-fade-up-delay-3 {
+    animation: fadeUp 0.6s ease-out 0.3s both;
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
