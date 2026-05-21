@@ -4,9 +4,10 @@ import { Link } from "react-router-dom";
 const ingredients = [
   { name: "Sabja Seeds", desc: "Rich in soluble fiber. Helps you feel full, feeds good bacteria." },
   { name: "Gond Katira", desc: "Natural prebiotic gum. Cools the body, supports gut lining." },
-  { name: "Live Probiotics", desc: "Billions of good bacteria in every bottle. Your microbiome's best friend." },
-  { name: "Nannari Root", desc: "Traditional Indian sarsaparilla. A natural coolant with antioxidant power." },
-  { name: "Gongura & Hibiscus", desc: "Tangy, probiotic-friendly, packed with Vitamin C and iron." },
+  { 
+    name: "Chicory Root Inulin", 
+    desc: "Soluble fiber extracted from chicory root. Acts as a prebiotic, feeds gut bacteria, and supports digestion." 
+  }
 ];
 
 const IngredientsSection = () => {

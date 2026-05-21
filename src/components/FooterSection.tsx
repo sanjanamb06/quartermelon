@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Instagram, Mail } from "lucide-react";
 
 const FooterSection = () => {
   return (
@@ -8,8 +9,8 @@ const FooterSection = () => {
         <div className="footer-cta-inner">
           <h2 className="footer-cta-heading">Ready to fix your gut?</h2>
           <p className="footer-cta-sub">
-            Join the waitlist and be first to get Quartermelon delivered in
-            Bengaluru. Early subscribers get a special founding member price.
+          Get your daily dose of clean, gut-friendly nutrition with Quartermelon. <br />
+          Now delivering in Bengaluru.
           </p>
           <div className="footer-cta-buttons">
             <Link to="/subscription" className="footer-btn-primary">
@@ -27,17 +28,52 @@ const FooterSection = () => {
         <div className="footer-bar-inner">
           <div className="footer-brand">
             <div className="footer-brand-name">
-              <img src="/logo_title.png" alt="Quartermelon" className="footer-brand-logo" />
+              <Link to="/">
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2px" }}>
+                  <img
+                    src="/logo_title.png"
+                    alt="Quartermelon"
+                    className="footer-brand-logo"
+                    style={{ height: "40px", width: "auto", objectFit: "contain" }}
+                  />
+                  <span style={{
+                    fontSize: "7px",
+                    fontFamily: "PlusJakartaSans, sans-serif",
+                    fontWeight: 700,
+                    letterSpacing: "0.15em",
+                    textTransform: "uppercase",
+                    color: "rgba(255,255,255,0.65)",
+                    textAlign: "center",
+                    whiteSpace: "nowrap"
+                  }}>
+                    All the fruits your mom told you to eat
+                  </span>
+                </div>
+              </Link>
             </div>
             <p className="footer-brand-sub">Your daily gut health system. Made in Bengaluru.</p>
           </div>
           <div className="footer-links">
-            <a href="https://www.instagram.com/quartermelon.in?igsh=Nmx2anVlNjJkc29i" className="footer-link">Instagram</a>
-            <a href="mailto:hello@quartermelon.in" className="footer-link">Contact</a>
+            <a
+              href="https://www.instagram.com/quartermelon.in?igsh=Nmx2anVlNjJkc29i"
+              className="footer-link"
+              style={{ display: "flex", alignItems: "center", gap: "8px" }}
+            >
+              <Instagram size={18} />
+              <span>Instagram</span>
+            </a>
+            <a
+              href="mailto:hello@quartermelon.in"
+              className="footer-link"
+              style={{ display: "flex", alignItems: "center", gap: "8px" }}
+            >
+              <Mail size={18} />
+              <span>hello@quartermelon.in</span>
+            </a>
           </div>
         </div>
         <div className="footer-bottom">
-          <p>FSSAI License: Applied | © 2026 Quartermelon Foods Pvt. Ltd. All rights reserved.</p>
+          <p>FSSAI License: 21226186000879 | © 2026 Quartermelon Foods Pvt. Ltd. All rights reserved.</p>
         </div>
       </footer>
 
@@ -128,8 +164,6 @@ const FooterSection = () => {
           margin-bottom: 4px;
         }
         .footer-brand-logo {
-          width: 180px;
-          height: auto;
           display: block;
           filter: brightness(0) invert(1);
         }

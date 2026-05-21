@@ -61,11 +61,28 @@ const SubscriptionPage = () => {
   const [showProducts, setShowProducts] = useState(false);
   const [quantities, setQuantities] = useState<Record<string, number>>({ ...INITIAL_QUANTITIES });
   const [mobileBoxOpen, setMobileBoxOpen] = useState(false);
+  const [ctaPulse, setCtaPulse] = useState(false);
   const [flavourSelectKey, setFlavourSelectKey] = useState(0);
+  const prevTotalRef = useRef(0);
 
   const total = Object.values(quantities).reduce((a, b) => a + b, 0);
   const subComplete = total === SUB_BOTTLES;
   const filledDots = Math.min(PROGRESS_DOTS, Math.round((total / SUB_BOTTLES) * PROGRESS_DOTS));
+
+  useEffect(() => {
+    if (total === 0) {
+      setMobileBoxOpen(false);
+      prevTotalRef.current = 0;
+      return;
+    }
+    if (prevTotalRef.current === 0) {
+      setCtaPulse(true);
+      const t = window.setTimeout(() => setCtaPulse(false), 2400);
+      prevTotalRef.current = total;
+      return () => window.clearTimeout(t);
+    }
+    prevTotalRef.current = total;
+  }, [total]);
 
   useEffect(() => {
     if (total > 0) {
@@ -334,7 +351,7 @@ const SubscriptionPage = () => {
                 </div>
                 <div className="sub-timeline-labels">
                   <span className="sub-tl-muted">Delivery 2</span>
-                  <span className="sub-tl-bold">Day 10–12</span>
+                  <span className="sub-tl-bold">Day 10 to 12</span>
                   <span className="sub-tl-muted">10 bottles</span>
                 </div>
               </div>
@@ -345,7 +362,7 @@ const SubscriptionPage = () => {
                 </div>
                 <div className="sub-timeline-labels">
                   <span className="sub-tl-muted">Delivery 3</span>
-                  <span className="sub-tl-bold">Day 20–22</span>
+                  <span className="sub-tl-bold">Day 20 to 22</span>
                   <span className="sub-tl-muted">10 bottles</span>
                 </div>
               </div>
@@ -359,7 +376,7 @@ const SubscriptionPage = () => {
             <p className="sub-label">Subscription Plan</p>
             <h1 className="sub-heading">Your Monthly Wellness Ritual</h1>
             <p className="sub-sub">
-              30 bottles delivered across three batches throughout the month — always fresh, always
+              30 bottles delivered across three batches throughout the month, always fresh, always
               cold.
             </p>
 
@@ -408,7 +425,7 @@ const SubscriptionPage = () => {
             <div className="sub-left">
               <div className="sub-products-header">
                 <h2 className="sub-products-heading">Choose Your Flavours</h2>
-                <p className="sub-products-sub">Mix and match — we deliver fresh daily.</p>
+                <p className="sub-products-sub">Mix and match. We deliver fresh daily.</p>
               </div>
 
               <div className="sub-filter-row">
@@ -429,7 +446,7 @@ const SubscriptionPage = () => {
                       }
                     }}
                   >
-                    <option value="">Select a flavour — fill all 30 ▾</option>
+                    <option value="">Select a flavour, fill all 30 ▾</option>
                     {flavourOptions.map((p) => (
                       <option key={p.slug} value={p.slug}>
                         {p.name}
@@ -457,17 +474,23 @@ const SubscriptionPage = () => {
 
       {/* Mobile drawer */}
       {showProducts && (
-        <div className={`sub-mobile-wrap ${mobileBoxOpen ? "sub-mobile-open" : ""}`}>
-          <button
-            type="button"
-            className="sub-mobile-bar"
-            onClick={() => setMobileBoxOpen((o) => !o)}
-            aria-expanded={mobileBoxOpen}
-          >
-            <span className="sub-mobile-bar-text">
-              {total} / {SUB_BOTTLES} selected — View Box {mobileBoxOpen ? "▼" : "▲"}
+        <div
+          className={`sub-mobile-wrap ${total > 0 ? "sub-mobile-wrap-visible" : ""} ${mobileBoxOpen ? "sub-mobile-open" : ""}`}
+          aria-hidden={total === 0}
+        >
+          <div className="sub-mobile-bar">
+            <span className="sub-mobile-count">
+              <strong>{total}</strong> / {SUB_BOTTLES} selected
             </span>
-          </button>
+            <button
+              type="button"
+              className={`sub-mobile-cta ${ctaPulse ? "sub-mobile-cta-pulse" : ""}`}
+              onClick={() => setMobileBoxOpen((o) => !o)}
+              aria-expanded={mobileBoxOpen}
+            >
+              View Your Box {mobileBoxOpen ? "▼" : "▲"}
+            </button>
+          </div>
           <div className="sub-mobile-sheet">
             <div className="sub-mobile-sheet-inner">{boxPanelInner}</div>
           </div>
@@ -1134,27 +1157,71 @@ const SubscriptionPage = () => {
             right: 0;
             bottom: 0;
             z-index: 45;
+            transform: translateY(100%);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+          }
+          .sub-mobile-wrap-visible {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
           }
           .sub-mobile-bar {
             width: 100%;
-            border: none;
             border-top: 1px solid ${C.boxBorder};
             background: ${C.cream};
-            padding: 14px 18px;
-            cursor: pointer;
+            padding: 16px 18px;
+            padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+            min-height: 68px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+            justify-content: space-between;
+            gap: 12px;
+            box-shadow: 0 -6px 24px rgba(0,0,0,0.1);
             font-family: 'PlusJakartaSans', sans-serif;
           }
-          .sub-mobile-bar-text {
+          .sub-mobile-count {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            flex-shrink: 0;
+          }
+          .sub-mobile-count strong {
+            font-weight: 800;
+            color: ${C.green};
+          }
+          .sub-mobile-cta {
+            flex-shrink: 0;
+            border: none;
+            cursor: pointer;
+            background: ${C.green};
+            color: #ffffff;
+            font-family: 'PlusJakartaSans', sans-serif;
             font-size: 0.88rem;
             font-weight: 700;
-            color: ${C.green};
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+            padding: 12px 20px;
+            border-radius: 999px;
+            box-shadow: 0 4px 14px rgba(45, 73, 31, 0.35);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            white-space: nowrap;
+          }
+          .sub-mobile-cta:active {
+            transform: scale(0.95);
+          }
+          .sub-mobile-cta-pulse {
+            animation: sub-mobile-cta-pulse 1.2s ease-in-out 2;
+          }
+          @keyframes sub-mobile-cta-pulse {
+            0%, 100% {
+              transform: scale(1);
+              box-shadow: 0 4px 14px rgba(45, 73, 31, 0.35);
+            }
+            50% {
+              transform: scale(1.06);
+              box-shadow: 0 6px 22px rgba(45, 73, 31, 0.55);
+            }
           }
           .sub-mobile-sheet {
             max-height: 0;

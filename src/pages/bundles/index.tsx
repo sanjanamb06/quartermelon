@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { Minus, Plus, X } from "lucide-react";
@@ -52,6 +52,8 @@ const BundlesPage = () => {
   const location = useLocation();
   const [items, setItems] = useState<ItemMap>(initialItems);
   const [mobileBoxOpen, setMobileBoxOpen] = useState(false);
+  const [ctaPulse, setCtaPulse] = useState(false);
+  const prevTotalRef = useRef(0);
 
   useEffect(() => {
     try {
@@ -89,6 +91,21 @@ const BundlesPage = () => {
 
   const total = Object.values(items).reduce((a, b) => a + b, 0);
   const bundleFull = total >= BUNDLE_SIZE;
+
+  useEffect(() => {
+    if (total === 0) {
+      setMobileBoxOpen(false);
+      prevTotalRef.current = 0;
+      return;
+    }
+    if (prevTotalRef.current === 0) {
+      setCtaPulse(true);
+      const t = window.setTimeout(() => setCtaPulse(false), 2400);
+      prevTotalRef.current = total;
+      return () => window.clearTimeout(t);
+    }
+    prevTotalRef.current = total;
+  }, [total]);
   const bundleDone = total === BUNDLE_SIZE;
   const runningTotal = total * PRICE_PER_BOTTLE;
 
@@ -314,17 +331,23 @@ const BundlesPage = () => {
         </div>
 
         {/* ── Mobile bottom drawer (expandable) ── */}
-        <div className={`bun-mobile-wrap ${mobileBoxOpen ? "bun-mobile-open" : ""}`}>
-          <button
-            type="button"
-            className="bun-mobile-bar"
-            onClick={() => setMobileBoxOpen((o) => !o)}
-            aria-expanded={mobileBoxOpen}
-          >
-            <span className="bun-mobile-bar-label">
-              {total} / {BUNDLE_SIZE} selected — View Box {mobileBoxOpen ? "▼" : "▲"}
+        <div
+          className={`bun-mobile-wrap ${total > 0 ? "bun-mobile-wrap-visible" : ""} ${mobileBoxOpen ? "bun-mobile-open" : ""}`}
+          aria-hidden={total === 0}
+        >
+          <div className="bun-mobile-bar">
+            <span className="bun-mobile-count">
+              <strong>{total}</strong> / {BUNDLE_SIZE} selected
             </span>
-          </button>
+            <button
+              type="button"
+              className={`bun-mobile-cta ${ctaPulse ? "bun-mobile-cta-pulse" : ""}`}
+              onClick={() => setMobileBoxOpen((o) => !o)}
+              aria-expanded={mobileBoxOpen}
+            >
+              View Your Box {mobileBoxOpen ? "▼" : "▲"}
+            </button>
+          </div>
           <div className="bun-mobile-sheet">
             <div className="bun-mobile-sheet-inner">
               <div className="bun-box bun-box-mobile-sheet">{boxPanelInner}</div>
@@ -681,24 +704,71 @@ const BundlesPage = () => {
             left: 0;
             right: 0;
             z-index: 40;
+            transform: translateY(100%);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+          }
+          .bun-mobile-wrap-visible {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
           }
           .bun-mobile-bar {
             width: 100%;
-            border: none;
-            border-top: 1px solid rgba(0,0,0,0.08);
+            border-top: 1px solid rgba(0,0,0,0.1);
             background: #EAF4E8;
-            padding: 14px 20px;
-            cursor: pointer;
+            padding: 16px 20px;
+            padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+            min-height: 68px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+            justify-content: space-between;
+            gap: 12px;
+            box-shadow: 0 -6px 24px rgba(0,0,0,0.1);
             font-family: 'PlusJakartaSans', sans-serif;
           }
-          .bun-mobile-bar-label {
+          .bun-mobile-count {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            flex-shrink: 0;
+          }
+          .bun-mobile-count strong {
+            font-weight: 800;
+            color: #2D6A4F;
+          }
+          .bun-mobile-cta {
+            flex-shrink: 0;
+            border: none;
+            cursor: pointer;
+            background: #2D6A4F;
+            color: #ffffff;
+            font-family: 'PlusJakartaSans', sans-serif;
             font-size: 0.88rem;
             font-weight: 700;
-            color: #2D6A4F;
+            padding: 12px 20px;
+            border-radius: 999px;
+            box-shadow: 0 4px 14px rgba(45, 106, 79, 0.35);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            white-space: nowrap;
+          }
+          .bun-mobile-cta:active {
+            transform: scale(0.95);
+          }
+          .bun-mobile-cta-pulse {
+            animation: bun-mobile-cta-pulse 1.2s ease-in-out 2;
+          }
+          @keyframes bun-mobile-cta-pulse {
+            0%, 100% {
+              transform: scale(1);
+              box-shadow: 0 4px 14px rgba(45, 106, 79, 0.35);
+            }
+            50% {
+              transform: scale(1.06);
+              box-shadow: 0 6px 22px rgba(45, 106, 79, 0.55);
+            }
           }
           .bun-mobile-sheet {
             max-height: 0;

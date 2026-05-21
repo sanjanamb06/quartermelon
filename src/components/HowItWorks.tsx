@@ -5,12 +5,12 @@ const steps = [
   {
     num: "01",
     title: "SUBSCRIBE",
-    desc: "Pick your plan — weekly, monthly, or quarterly. Cancel or pause anytime.",
+    desc: "Pick your plan, weekly, monthly, or quarterly. Cancel or pause anytime.",
   },
   {
     num: "02",
     title: "WE DELIVER DAILY",
-    desc: "Fresh bottles show up at your door in Bengaluru every morning (or alternate days — your call).",
+    desc: "Fresh bottles show up at your door in Bengaluru every morning (or alternate days, your call).",
   },
   {
     num: "03",

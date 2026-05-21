@@ -17,7 +17,7 @@ const HeroSection = () => (
           </h1>
 
           <p className="hero-sub">
-            All the fruits your mom told you to eat — delivered cold pressed to
+            All the fruits your mom told you to eat, delivered cold pressed to
             your door every morning. 180ml of real goodness.
           </p>
 
@@ -53,7 +53,7 @@ const HeroSection = () => (
           />
           <img
             src={heroBottle}
-            alt="Quartermelon cold-pressed juice bottle — fresh and natural"
+            alt="Quartermelon cold-pressed juice bottle, fresh and natural"
             className="hero-bottle"
           />
         </div>

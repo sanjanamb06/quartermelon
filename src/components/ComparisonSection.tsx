@@ -25,7 +25,7 @@ const ComparisonSection = () => {
 
           {/* Paragraph 1 */}
           <p className="cmp-para">
-            Most packaged juices — even the ones that look healthy — are loaded
+            Most packaged juices, even the ones that look healthy, are loaded
             with added sugar syrups, concentrates, and artificial preservatives.
             These spike your blood sugar, feed bad gut bacteria, and leave you
             feeling worse than before.
@@ -33,8 +33,8 @@ const ComparisonSection = () => {
 
           {/* Paragraph 2 */}
           <p className="cmp-para" style={{ marginBottom: "40px" }}>
-            That's why Quartermelon cold-presses real Apple, Beetroot & Carrot
-            — no concentrates, no syrups, no shortcuts. Just 50ml of raw,
+            That's why Quartermelon cold-presses real Apple, Beetroot & Carrot,
+            no concentrates, no syrups, no shortcuts. Just 50ml of raw,
             living nutrition with only 22 kcal per shot. Ingredients your gut
             actually recognises.
           </p>

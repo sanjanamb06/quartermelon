@@ -77,11 +77,26 @@ const Navbar = () => {
           {/* Center Logo */}
           <div className="flex justify-center flex-1 md:flex-none">
             <Link to="/">
-              <img
-                src="/logo_title.png"
-                alt="Quartermelon"
-                style={{ height: "40px", width: "auto", objectFit: "contain" }}
-              />
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2px" }}>
+                <img
+                  src="/logo_title.png"
+                  alt="Quartermelon"
+                  className="navbar-center-logo"
+                  style={{ width: "auto", objectFit: "contain" }}
+                />
+                <span style={{
+                  fontSize: "7px",
+                  fontFamily: "PlusJakartaSans, sans-serif",
+                  fontWeight: 700,
+                  letterSpacing: "0.15em",
+                  textTransform: "uppercase",
+                  color: "#1A1A1A",
+                  textAlign: "center",
+                  whiteSpace: "nowrap"
+                }}>
+                  All the fruits your mom told you to eat
+                </span>
+              </div>
             </Link>
           </div>
 
@@ -136,11 +151,25 @@ const Navbar = () => {
         {/* Drawer header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 24px 16px", borderBottom: "1px solid rgba(0,0,0,0.08)" }}>
           <Link to="/" onClick={() => setMobileOpen(false)}>
-            <img
-              src="/logo_title.png"
-              alt="Quartermelon"
-              style={{ height: "32px", width: "auto", objectFit: "contain" }}
-            />
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2px" }}>
+              <img
+                src="/logo_title.png"
+                alt="Quartermelon"
+                style={{ height: "40px", width: "auto", objectFit: "contain" }}
+              />
+              <span style={{
+                fontSize: "7px",
+                fontFamily: "PlusJakartaSans, sans-serif",
+                fontWeight: 700,
+                letterSpacing: "0.15em",
+                textTransform: "uppercase",
+                color: "#1A1A1A",
+                textAlign: "center",
+                whiteSpace: "nowrap"
+              }}>
+                All the fruits your mom told you to eat
+              </span>
+            </div>
           </Link>
           <button
             onClick={() => setMobileOpen(false)}
@@ -201,6 +230,17 @@ const Navbar = () => {
           </Link>
         </div>
       </div>
+
+      <style>{`
+        .navbar-center-logo {
+          height: 52px;
+        }
+        @media (min-width: 768px) {
+          .navbar-center-logo {
+            height: 40px;
+          }
+        }
+      `}</style>
     </>
   );
 };
