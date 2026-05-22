@@ -202,7 +202,7 @@ const IngredientsSection = () => {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: #D4D1E8;
+          background: #cdc7e3;
           border-radius: 24px;
           overflow: hidden;
         }

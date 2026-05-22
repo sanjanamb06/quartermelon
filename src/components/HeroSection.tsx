@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import heroBottle from "@/assets/hero-bottle.png";
+import newHeroImage from "@/assets/new-hero-image.png";
 
 const HeroSection = () => (
   <section className="hero-section">
@@ -35,24 +35,10 @@ const HeroSection = () => (
           </div>
         </div>
 
-        {/* ─── RIGHT: Blob + Bottle ─── */}
+        {/* ─── RIGHT: Hero image ─── */}
         <div className="hero-visual animate-fade-up-delay-2">
-          {/* Gradient blob */}
-          <div
-            aria-hidden="true"
-            className="hero-blob"
-            style={{
-              background: `
-                radial-gradient(circle at 60% 40%, rgba(232, 115, 26, 0.5), transparent 60%),
-                radial-gradient(circle at 40% 60%, rgba(197, 216, 48, 0.45), transparent 55%),
-                radial-gradient(circle at 70% 70%, rgba(220, 60, 60, 0.3), transparent 50%)
-              `,
-              filter: "blur(50px)",
-              transform: "scale(1.1)",
-            }}
-          />
           <img
-            src={heroBottle}
+            src={newHeroImage}
             alt="Quartermelon cold-pressed juice bottle, fresh and natural"
             className="hero-bottle"
           />
@@ -64,27 +50,31 @@ const HeroSection = () => (
     <style>{`
       .hero-section {
         position: relative;
-        min-height: 100svh;
+        min-height: 100vh;
+        box-sizing: border-box;
         overflow: hidden;
-        background-color: #F5F0E8;
+        background-color: #f1e9de;
         font-family: 'PlusJakartaSans', sans-serif;
       }
       .hero-container {
-        max-width: 1400px;
-        margin: 0 auto;
+        width: 100%;
+        max-width: none;
+        margin: 0;
         padding: 0 40px;
-        height: 100%;
-        min-height: 100svh;
+        min-height: 100vh;
+        box-sizing: border-box;
         display: flex;
         align-items: center;
       }
       .hero-grid {
         width: 100%;
+        height: 100%;
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 64px;
+        gap: 32px;
         align-items: center;
-        padding: 96px 0 48px;
+        padding: 80px 0 48px;
+        box-sizing: border-box;
       }
       .hero-text {
         display: flex;
@@ -167,50 +157,59 @@ const HeroSection = () => (
 
       .hero-visual {
         position: relative;
+        max-width: 100%;
+        overflow: hidden;
+        border-radius: 20px;
+        margin-right: 0;
         display: flex;
         align-items: center;
         justify-content: center;
         order: 2;
-        min-height: 420px;
-      }
-      .hero-blob {
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
       }
       .hero-bottle {
-        position: relative;
-        z-index: 10;
-        width: auto;
-        max-height: 95vh;
-        max-width: 100%;
+        display: block;
+        width: 100%;
+        max-height: 480px;
+        height: auto;
         object-fit: contain;
-        transform: rotate(4deg);
-        margin-top: -8vh;
-        filter: drop-shadow(0 24px 48px rgba(0,0,0,0.18));
+        object-position: center;
       }
 
       @media (max-width: 768px) {
+        .hero-section {
+          height: auto;
+          max-height: none;
+        }
         .hero-container {
           padding: 0 20px;
+          height: auto;
+          max-height: none;
         }
         .hero-grid {
           grid-template-columns: 1fr;
           gap: 0;
+          height: auto;
           padding: 88px 0 48px;
         }
         .hero-text {
           order: 2;
         }
         .hero-visual {
-          order: 1;
-          min-height: 300px;
-          margin-bottom: 16px;
-        }
+  order: 1;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 16px;
+  overflow: hidden;
+  display: block;
+  margin-bottom: 28px;
+}
         .hero-bottle {
-          max-height: 72vw;
-          transform: rotate(2deg);
-          margin-top: 0;
+          width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+
         }
         .hero-heading {
           font-size: 2.4rem;
