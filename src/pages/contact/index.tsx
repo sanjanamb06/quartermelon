@@ -155,15 +155,6 @@ const ContactPage = () => {
     try {
       await fetch(APPS_SCRIPT_URL, {
         method: "POST",
-        body: JSON.stringify({
-          name: fields.name,
-          email: fields.email,
-          phone: fields.phone,
-          message: fields.comment,
-        }),
-      });
-      await fetch(APPS_SCRIPT_URL, {
-        method: "POST",
         mode: "no-cors",
         headers: {
           "Content-Type": "text/plain",

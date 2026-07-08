@@ -7,6 +7,8 @@ import Index from "./pages/Index.tsx";
 import ProductsPage from "./pages/products/index.tsx";
 import ProductDetailPage from "./pages/products/[slug].tsx";
 import BundlesPage from "./pages/bundles/index.tsx";
+import PackagesPage from "./pages/packages/index.tsx";
+import PackageDetailPage from "./pages/packages/[type].tsx";
 import ReviewPage from "./pages/review/index.tsx";
 import SubscriptionPage from "./pages/subscription/index.tsx";
 import AboutPage from "./pages/about/index.tsx";
@@ -28,6 +30,8 @@ const App = () => (
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/products/:slug" element={<ProductDetailPage />} />
           <Route path="/bundles" element={<BundlesPage />} />
+          <Route path="/packages" element={<PackagesPage />} />
+          <Route path="/packages/:type" element={<PackageDetailPage />} />
           <Route path="/review" element={<ReviewPage />} />
           <Route path="/subscription" element={<SubscriptionPage />} />
           <Route path="/about" element={<AboutPage />} />
@@ -39,5 +43,4 @@ const App = () => (
     </TooltipProvider>
   </QueryClientProvider>
 );
-
 export default App;

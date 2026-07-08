@@ -5,19 +5,8 @@ interface ProductCardProps {
   product: Product;
 }
 
-// Map product slugs to real images
-const imageMap: Record<string, string> = {
-  "watermelon-sabja": "/products/watermelon-sabja.png",
-  "watermelon-gond": "/products/watermelon-gond.png",
-  "muskmelon-sabja": "/products/muskmelon.png",
-  "pineapple-sabja": "/products/pineapple-sabja.png",
-  "pineapple-gond": "/products/pineapple-gond.png",
-  "turmeric-shot": "/products/turmeric.png",
-  "abc-shot": "/products/abc.png",
-};
-
 const ProductCard = ({ product }: ProductCardProps) => {
-  const imageSrc = imageMap[product.slug] || product.images[0];
+  const imageSrc = product.images[0];
 
   return (
     <Link to={`/products/${product.slug}`} className="pc-card" style={{ textDecoration: "none" }}>

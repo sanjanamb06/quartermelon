@@ -1,231 +1,195 @@
 import { Link } from "react-router-dom";
-import newHeroImage from "@/assets/new-hero-image.png";
+import heroImage from "@/assets/hero-image.png";
 
 const HeroSection = () => (
   <section className="hero-section">
+    {/* Subtle gradient overlay to darken the left side behind text */}
+    <div className="hero-overlay" />
+    
     <div className="hero-container">
-      <div className="hero-grid">
+      <div className="hero-content animate-fade-up">
+        <h1 className="hero-heading">
+          100% Natural.
+          <br />
+          Cold Pressed.
+          <br />
+          <span className="hero-accent">Daily.</span>
+        </h1>
 
-        {/* ─── LEFT: Text content ─── */}
-        <div className="hero-text animate-fade-up">
-          <h1 className="hero-heading">
-            100% Natural.
-            <br />
-            Cold Pressed.
-            <br />
-            <span style={{ color: "#C5D830" }}>Daily.</span>
-          </h1>
+        <p className="hero-description">
+          All the fruits your mom told you to eat, delivered cold pressed to
+          your door every morning. 180ml of real goodness.
+        </p>
 
-          <p className="hero-sub">
-            All the fruits your mom told you to eat, delivered cold pressed to
-            your door every morning. 180ml of real goodness.
-          </p>
-
-          <div className="hero-tag-wrap">
-            <span className="hero-tag">Launching in Bengaluru</span>
-          </div>
-
-          <div className="hero-buttons">
-            <Link to="/subscription" className="hero-btn-primary">
-              Choose Your Plan
-            </Link>
-            <Link to="/bundles" className="hero-btn-secondary">
-              Create Your Assortment
-            </Link>
-          </div>
+        <div className="hero-cta-wrap">
+          <Link to="/packages" className="hero-cta-btn">
+            Shop Assortments
+          </Link>
         </div>
-
-        {/* ─── RIGHT: Hero image ─── */}
-        <div className="hero-visual animate-fade-up-delay-2">
-          <img
-            src={newHeroImage}
-            alt="Quartermelon cold-pressed juice bottle, fresh and natural"
-            className="hero-bottle"
-          />
-        </div>
-
       </div>
     </div>
 
     <style>{`
       .hero-section {
         position: relative;
-        min-height: 100vh;
-        box-sizing: border-box;
-        overflow: hidden;
-        background-color: #f1e9de;
-        font-family: 'PlusJakartaSans', sans-serif;
-      }
-      .hero-container {
+        min-height: calc(100vh - 80px); /* Occupy remaining viewport height after desktop navbar (80px) */
         width: 100%;
-        max-width: none;
-        margin: 0;
-        padding: 0 40px;
-        min-height: 100vh;
-        box-sizing: border-box;
         display: flex;
         align-items: center;
+        background-image: url(${heroImage});
+        background-size: cover;
+        background-position: center;
+        font-family: 'PlusJakartaSans', sans-serif;
+        box-sizing: border-box;
+        overflow: hidden;
       }
-      .hero-grid {
+      
+      .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
         width: 100%;
         height: 100%;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 32px;
+        /* Dark gradient overlay: left 45%, middle 25%, right 15% */
+        background: linear-gradient(to right, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0.15) 100%);
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .hero-container {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 0 40px;
+        display: flex;
         align-items: center;
-        padding: 80px 0 48px;
+        min-height: inherit;
         box-sizing: border-box;
       }
-      .hero-text {
+
+      .hero-content {
+        max-width: 520px;
+        width: 100%;
         display: flex;
         flex-direction: column;
         justify-content: center;
-        order: 1;
+        text-align: left;
+        padding: 80px 0;
       }
+
       .hero-heading {
         font-family: 'Gemilion', serif;
         font-size: clamp(2.5rem, 5vw, 4rem);
-        font-weight: 500;
-        color: #1A1A1A;
-        line-height: 1.05;
+        font-weight: 400;
+        color: #ffe3e3ff; /* High-contrast white headline */
+        line-height: 1.15;
         letter-spacing: -0.01em;
         text-transform: uppercase;
-        margin-bottom: 20px;
+        margin-bottom: 24px;
       }
-      .hero-sub {
-        font-size: 1.05rem;
-        color: #3D3D3D;
-        line-height: 1.65;
-        max-width: 420px;
-        margin-bottom: 20px;
-        font-weight: 400;
-      }
-      .hero-tag-wrap {
-        margin-bottom: 32px;
-      }
-      .hero-tag {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        background-color: rgba(232, 115, 26, 0.12);
-        color: #E8731A;
-        border-radius: 999px;
-        padding: 6px 16px;
-        font-size: 0.875rem;
-        font-weight: 600;
-        letter-spacing: 0.02em;
-      }
-      .hero-buttons {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-      }
-      .hero-btn-primary {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        background-color: #C5D830;
-        color: #1A1A1A;
-        font-family: 'PlusJakartaSans', sans-serif;
-        font-weight: 700;
-        font-size: 0.95rem;
-        padding: 14px 32px;
-        border-radius: 999px;
-        text-decoration: none;
-        box-shadow: 0 4px 20px rgba(197, 216, 48, 0.35);
-        transition: all 0.2s ease;
-        white-space: nowrap;
-      }
-      .hero-btn-primary:hover { filter: brightness(1.05); transform: scale(1.02); }
-      .hero-btn-secondary {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border: 2px solid #1A1A1A;
-        color: #1A1A1A;
-        background-color: transparent;
-        font-family: 'PlusJakartaSans', sans-serif;
-        font-weight: 700;
-        font-size: 0.95rem;
-        padding: 14px 32px;
-        border-radius: 999px;
-        text-decoration: none;
-        transition: all 0.2s ease;
-        white-space: nowrap;
-      }
-      .hero-btn-secondary:hover { background-color: rgba(0,0,0,0.05); }
 
-      .hero-visual {
-        position: relative;
-        max-width: 100%;
-        overflow: hidden;
-        border-radius: 20px;
-        margin-right: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        order: 2;
+      .hero-accent {
+        color: #2F1523; /* Highlight 'Daily.' is also white */
       }
-      .hero-bottle {
-        display: block;
-        width: 100%;
-        max-height: 480px;
-        height: auto;
-        object-fit: contain;
-        object-position: center;
+
+      .hero-description {
+        font-size: clamp(1rem, 1.5vw, 1.125rem);
+        color: rgba(255, 255, 255, 0.88); /* Soft white with 88% opacity */
+        line-height: 1.6;
+        max-width: 450px;
+        margin-bottom: 36px;
+        font-weight: 500;
+      }
+
+      .hero-cta-wrap {
+        display: flex;
+      }
+
+      .hero-cta-btn {
+        display: inline-flex;
+        align-items: cente;
+        justify-content: center;
+        background-color: #fededeff; /* Wheat white background */
+        color: #1E331E; /* Dark organic green text */
+        font-family: 'PlusJakartaSans', sans-serif;
+        font-weight: 600; /* Medium font weight */
+        font-size: 1rem;
+        padding: 16px 36px;
+      
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Subtle shadow */
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smooth transition */
+        white-space: nowrap;
+      }
+
+      .hero-cta-btn:hover {
+        background-color: #FAF4E8;
+        transform: translateY(-2px); /* Gentle hover lift */
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+      }
+
+      @media (max-width: 1024px) {
+        .hero-container {
+          padding: 0 32px;
+        }
       }
 
       @media (max-width: 768px) {
+        /* Tablet layout */
         .hero-section {
-          height: auto;
-          max-height: none;
+          min-height: calc(100vh - 64px); /* Adjust for smaller navbar on tablet */
+          background-position: 55% center;
         }
         .hero-container {
-          padding: 0 20px;
-          height: auto;
-          max-height: none;
+          padding: 0 24px;
         }
-        .hero-grid {
-          grid-template-columns: 1fr;
-          gap: 0;
-          height: auto;
-          padding: 88px 0 48px;
-        }
-        .hero-text {
-          order: 2;
-        }
-        .hero-visual {
-  order: 1;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  border-radius: 16px;
-  overflow: hidden;
-  display: block;
-  margin-bottom: 28px;
-}
-        .hero-bottle {
-          width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  display: block;
-
+        .hero-content {
+          max-width: 450px;
+          padding: 100px 0 60px;
         }
         .hero-heading {
-          font-size: 2.4rem;
+          max-width: 300px;
+          line-height: 1.05;
         }
-        .hero-sub {
-          font-size: 0.95rem;
-          max-width: 100%;
+      }
+
+      @media (max-width: 480px) {
+        /* Mobile layout */
+        .hero-section {
+          min-height: 80vh; /* Reduced height to 80vh */
+          background-position: 65% center; /* Adjust image crop */
         }
-        .hero-buttons {
-          flex-direction: column;
+        
+        .hero-overlay {
+          /* Increased dark overlay opacity on mobile (55-60%) */
+          background: linear-gradient(to right, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.25) 100%);
         }
-        .hero-btn-primary,
-        .hero-btn-secondary {
-          width: 100%;
-          justify-content: center;
+
+        .hero-container {
+          padding: 0 20px;
         }
+        .hero-content {
+          max-width: 320px;
+          gap: 16px;
+        } 
+        .hero-heading {
+          font-size: 2.2rem;
+          margin-bottom: 16px;
+        }
+        .hero-description {
+  max-width: 260px;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+        .hero-cta-btn {
+  width: fit-content;      /* Don't stretch full width */
+  padding: 12px 22px;      /* Smaller button */
+  font-size: 0.9rem;
+  align-self: flex-end;    /* Move to the right (if parent is flex) */
+}
       }
     `}</style>
   </section>

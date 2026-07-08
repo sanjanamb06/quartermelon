@@ -1,11 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ShoppingBag, X } from "lucide-react";
+import { ShoppingBag, X, ChevronDown } from "lucide-react";
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [tappedLink, setTappedLink] = useState<string | null>(null);
+  // Desktop dropdown state
+  const [bundleDropdownOpen, setBundleDropdownOpen] = useState(false);
+  // Mobile accordion state
+  const [mobileBundleOpen, setMobileBundleOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const { pathname } = useLocation();
 
   useEffect(() => {
@@ -20,23 +25,43 @@ const Navbar = () => {
     return () => { document.body.style.overflow = ""; };
   }, [mobileOpen]);
 
+  // Close desktop dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setBundleDropdownOpen(false);
+      }
+    };
+    if (bundleDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [bundleDropdownOpen]);
+
+  const isBundleActive = pathname === "/packages" || pathname === "/bundles";
+
   const links = [
     { label: "Products", href: "/products" },
     { label: "Plans", href: "/subscription" },
-    { label: "Builder", href: "/bundles" },
     { label: "About us", href: "/about" },
     { label: "Contact us", href: "/contact" },
+  ];
+
+  const bundleSubLinks = [
+    { label: "Curated Bundles", href: "/packages" },
+    { label: "Build Your Own", href: "/bundles" },
   ];
 
   const handleMobileLinkClick = (href: string) => {
     setTappedLink(href);
     setTimeout(() => setTappedLink(null), 150);
     setMobileOpen(false);
+    setMobileBundleOpen(false);
   };
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-background/90 backdrop-blur-md shadow-sm" : "bg-transparent"}`}>
+      <nav className="sticky top-0 left-0 right-0 z-50 w-full bg-gradient-to-b from-[#FFFFFF] to-[#F6F6F6] border-b border-[rgba(0,0,0,0.06)] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
         <div className="container flex items-center justify-between h-16 md:h-20">
 
           {/* Mobile: hamburger */}
@@ -54,7 +79,67 @@ const Navbar = () => {
 
           {/* Desktop Links (Left) */}
           <div className="hidden md:flex flex-1 items-center gap-6">
-            {links.map((l) => (
+            {/* Products — first nav item */}
+            <div className="nav-link-wrap">
+              <Link
+                to={links[0].href}
+                className="text-sm font-semibold transition-colors"
+                style={{ color: "#1A1A1A" }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#3D3D3D")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#1A1A1A")}
+              >
+                {links[0].label}
+              </Link>
+              <span
+                className={`nav-link-underline ${pathname === links[0].href ? "nav-link-underline-active" : ""}`}
+              />
+            </div>
+
+            {/* ── Bundles dropdown — second nav item ── */}
+            <div className="nav-link-wrap nav-dropdown-wrap" ref={dropdownRef}>
+              <button
+                className="nav-dropdown-trigger text-sm font-semibold transition-colors"
+                style={{ color: "#1A1A1A" }}
+                onClick={() => setBundleDropdownOpen((o) => !o)}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#3D3D3D")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#1A1A1A")}
+                aria-haspopup="true"
+                aria-expanded={bundleDropdownOpen}
+              >
+                Bundles
+                <ChevronDown
+                  size={14}
+                  className="nav-chevron"
+                  style={{ transform: bundleDropdownOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+                />
+              </button>
+              <span
+                className={`nav-link-underline ${isBundleActive ? "nav-link-underline-active" : ""}`}
+              />
+
+              {/* Dropdown panel */}
+              {bundleDropdownOpen && (
+                <div className="nav-dropdown-panel" role="menu">
+                  {bundleSubLinks.map((sub) => (
+                    <Link
+                      key={sub.href}
+                      to={sub.href}
+                      role="menuitem"
+                      className="nav-dropdown-item"
+                      style={{
+                        background: pathname === sub.href ? "rgba(197,216,48,0.12)" : "transparent",
+                        fontWeight: pathname === sub.href ? 700 : 600,
+                      }}
+                      onClick={() => setBundleDropdownOpen(false)}
+                    >
+                      {sub.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {links.slice(1).map((l) => (
               <div key={l.href} className="nav-link-wrap">
                 <Link
                   to={l.href}
@@ -66,9 +151,7 @@ const Navbar = () => {
                   {l.label}
                 </Link>
                 <span
-                  className={`nav-link-underline ${
-                    pathname === l.href ? "nav-link-underline-active" : ""
-                  }`}
+                  className={`nav-link-underline ${pathname === l.href ? "nav-link-underline-active" : ""}`}
                 />
               </div>
             ))}
@@ -104,10 +187,10 @@ const Navbar = () => {
           <div className="flex flex-1 items-center justify-end gap-4 md:gap-6">
             <Link
               to="/review"
-              className="inline-flex items-center justify-center gap-2 md:rounded-full md:bg-[#2d491f] md:text-white md:px-6 md:py-2.5 text-sm font-semibold hover:opacity-90 transition-opacity"
-            >
-              <ShoppingBag size={20} className="md:w-[18px] md:h-[18px] text-foreground md:text-white" />
-              <span className="hidden md:inline">Review</span>
+              className="inline-flex items-center justify-center gap-2  md:text-white md:px-6 md:py-2.5 text-sm font-semibold hover:opacity-90 transition-opacity"
+              aria-label="Review order"
+            ><ShoppingBag size={20} className="md:w-[18px] md:h-[18px] text-[#1A1A1A]" />
+              
             </Link>
           </div>
 
@@ -182,7 +265,97 @@ const Navbar = () => {
 
         {/* Nav links */}
         <div style={{ padding: "16px 24px", display: "flex", flexDirection: "column", gap: "4px", flex: 1 }}>
-          {links.map((l) => (
+          {/* Products — first nav item */}
+          <Link
+            to={links[0].href}
+            onClick={() => handleMobileLinkClick(links[0].href)}
+            style={{
+              display: "block",
+              padding: "14px 0",
+              fontSize: "1rem",
+              fontWeight: 600,
+              color: "#1A1A1A",
+              textDecoration: "none",
+              fontFamily: "'PlusJakartaSans', sans-serif",
+              borderBottom: "1px solid rgba(0,0,0,0.06)",
+              background: tappedLink === links[0].href ? "rgba(195, 217, 45, 0.3)" : "transparent",
+              transition: "background 150ms ease",
+            }}
+          >
+            {links[0].label}
+          </Link>
+
+          {/* Mobile Bundles accordion — second nav item */}
+          <div>
+            <button
+              type="button"
+              onClick={() => setMobileBundleOpen((o) => !o)}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+                padding: "14px 0",
+                fontSize: "1rem",
+                fontWeight: 600,
+                color: "#1A1A1A",
+                textDecoration: "none",
+                fontFamily: "'PlusJakartaSans', sans-serif",
+                borderBottom: mobileBundleOpen ? "none" : "1px solid rgba(0,0,0,0.06)",
+                background: "transparent",
+                border: "none",
+                borderBottomWidth: "1px",
+                borderBottomStyle: "solid",
+                borderBottomColor: mobileBundleOpen ? "transparent" : "rgba(0,0,0,0.06)",
+                cursor: "pointer",
+              }}
+              aria-expanded={mobileBundleOpen}
+            >
+              <span>Bundles</span>
+              <ChevronDown
+                size={16}
+                style={{
+                  transition: "transform 0.2s ease",
+                  transform: mobileBundleOpen ? "rotate(180deg)" : "rotate(0deg)",
+                  color: "#1A1A1A",
+                }}
+              />
+            </button>
+
+            {/* Accordion sub-links */}
+            <div
+              style={{
+                maxHeight: mobileBundleOpen ? "120px" : "0",
+                overflow: "hidden",
+                transition: "max-height 0.25s ease",
+                borderBottom: mobileBundleOpen ? "1px solid rgba(0,0,0,0.06)" : "none",
+              }}
+            >
+              {bundleSubLinks.map((sub) => (
+                <Link
+                  key={sub.href}
+                  to={sub.href}
+                  onClick={() => handleMobileLinkClick(sub.href)}
+                  style={{
+                    display: "block",
+                    padding: "11px 0 11px 20px",
+                    fontSize: "0.9rem",
+                    fontWeight: pathname === sub.href ? 700 : 500,
+                    color: pathname === sub.href ? "#2d4920" : "#555",
+                    textDecoration: "none",
+                    fontFamily: "'PlusJakartaSans', sans-serif",
+                    background: tappedLink === sub.href ? "rgba(195, 217, 45, 0.2)" : "transparent",
+                    transition: "background 150ms ease",
+                    borderLeft: pathname === sub.href ? "3px solid #c3d92d" : "3px solid transparent",
+                  }}
+                >
+                  {sub.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {links.slice(1).map((l) => (
             <Link
               key={l.href}
               to={l.href}
@@ -239,6 +412,61 @@ const Navbar = () => {
           .navbar-center-logo {
             height: 40px;
           }
+        }
+
+        /* ── Dropdown trigger button ── */
+        .nav-dropdown-trigger {
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 0;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-family: inherit;
+        }
+        .nav-chevron {
+          transition: transform 0.2s ease;
+        }
+
+        /* ── Dropdown panel ── */
+        .nav-dropdown-wrap {
+          position: relative;
+        }
+        .nav-dropdown-panel {
+          position: absolute;
+          top: calc(100% + 14px);
+          left: 50%;
+          transform: translateX(-50%);
+          min-width: 176px;
+          background: #ffffff;
+          border: 1px solid rgba(0,0,0,0.08);
+          border-radius: 14px;
+          box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+          padding: 6px;
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+          z-index: 100;
+          animation: dropdown-appear 0.15s ease-out both;
+        }
+        @keyframes dropdown-appear {
+          from { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+          to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        .nav-dropdown-item {
+          display: block;
+          padding: 10px 14px;
+          border-radius: 9px;
+          font-size: 0.88rem;
+          color: #1A1A1A;
+          text-decoration: none;
+          font-family: 'PlusJakartaSans', sans-serif;
+          transition: background 0.15s;
+          white-space: nowrap;
+        }
+        .nav-dropdown-item:hover {
+          background: rgba(197,216,48,0.15) !important;
         }
       `}</style>
     </>

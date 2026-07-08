@@ -13,10 +13,7 @@ const FooterSection = () => {
           Now delivering in Bengaluru.
           </p>
           <div className="footer-cta-buttons">
-            <Link to="/subscription" className="footer-btn-primary">
-              Choose Your Plan
-            </Link>
-            <Link to="/bundles" className="footer-btn-secondary">
+            <Link to="/packages" className="footer-btn-primary">
               Create Your Assortment
             </Link>
           </div>

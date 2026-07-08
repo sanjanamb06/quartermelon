@@ -1,29 +1,37 @@
+import { useState } from "react";
 import { Link, useParams, Navigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import FooterSection from "@/components/FooterSection";
 import ProductCard from "@/components/ProductCard";
 import { products } from "@/data/products";
 
-// Map product slugs to real images
-const imageMap: Record<string, string> = {
-  "watermelon-sabja": "/products/watermelon-sabja.png",
-  "watermelon-gond": "/products/watermelon-gond.png",
-  "muskmelon-sabja": "/products/muskmelon.png",
-  "pineapple-sabja": "/products/pineapple-sabja.png",
-  "pineapple-gond": "/products/pineapple-gond.png",
-  "turmeric-shot": "/products/turmeric.png",
-  "abc-shot": "/products/abc.png",
-};
+import type { Product } from "@/data/products";
 
 // ─── Image Gallery ─────────────────────────────────────────────────────────
-const ImageGallery = ({ slug, name }: { slug: string; name: string }) => {
-  const mainImage = imageMap[slug] || "/products/watermelon- sabja.png";
+const ImageGallery = ({ product }: { product: Product }) => {
+  const [currentImage, setCurrentImage] = useState(0);
+  const mainImage = product.images[currentImage];
 
   return (
     <div className="pdp-gallery">
       <div className="pdp-gallery-main">
-        <img src={mainImage} alt={name} className="pdp-gallery-img" />
+        <img src={mainImage} alt={product.name} className="pdp-gallery-img" />
       </div>
+      {product.images.length > 1 && (
+        <div className="flex gap-2 mt-3">
+          {product.images.map((img, i) => (
+            <img
+              key={i}
+              src={img}
+              alt=""
+              onClick={() => setCurrentImage(i)}
+              className={`w-16 h-16 object-cover rounded cursor-pointer ${
+                i === currentImage ? "ring-2 ring-primary" : ""
+              }`}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
@@ -76,9 +84,6 @@ const ProductInfo = ({ product }: { product: (typeof products)[0] }) => (
       <Link to={`/bundles?flavor=${product.slug}`} className="pdp-btn-primary">
         Add to Bundle
       </Link>
-      <Link to="/subscription" className="pdp-btn-secondary">
-        Get Subscription
-      </Link>
     </div>
   </div>
 );
@@ -86,7 +91,7 @@ const ProductInfo = ({ product }: { product: (typeof products)[0] }) => (
 // ─── You May Also Like ─────────────────────────────────────────────────────
 const YouMayAlsoLike = ({ currentSlug, category }: { currentSlug: string; category: string }) => {
   const related = products
-    .filter((p) => p.category === category && p.slug !== currentSlug)
+    .filter((p) => p.category === category && p.slug !== currentSlug && !p.hidden)
     .slice(0, 3);
 
   if (related.length === 0) return null;
@@ -126,7 +131,7 @@ const ProductDetailPage = () => {
 
           {/* Main grid */}
           <div className="pdp-grid">
-            <ImageGallery slug={product.slug} name={product.name} />
+            <ImageGallery product={product} />
             <ProductInfo product={product} />
           </div>
 
@@ -277,9 +282,7 @@ const ProductDetailPage = () => {
 
         .pdp-ctas {
           display: flex;
-          gap: 12px;
           margin-top: 8px;
-          flex-wrap: wrap;
         }
         .pdp-btn-primary {
           display: inline-flex;
@@ -345,8 +348,7 @@ const ProductDetailPage = () => {
           .pdp-ctas {
             flex-direction: column;
           }
-          .pdp-btn-primary,
-          .pdp-btn-secondary {
+          .pdp-btn-primary {
             width: 100%;
             justify-content: center;
           }
