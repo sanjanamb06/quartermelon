@@ -297,15 +297,34 @@ Deno.serve(async (req: Request) => {
     );
   }
 
+  // Clone response for reading text safely to avoid consuming the body stream.
+  let razorpayResponseBody = "";
+  try {
+    const responseClone = razorpayResponse.clone();
+    razorpayResponseBody = await responseClone.text();
+  } catch (e) {
+    razorpayResponseBody = `(Error reading response body: ${String(e)})`;
+  }
+
+  // Temporary debugging logging
+  console.error("Razorpay Status:", razorpayResponse.status);
+  console.error("Razorpay Body:", razorpayResponseBody);
+  console.error("Key Prefix:", razorpayKeyId ? razorpayKeyId.slice(0, 10) : "undefined");
+
   if (!razorpayResponse.ok) {
-    let razorpayErrorBody = "";
-    try {
-      razorpayErrorBody = await razorpayResponse.text();
-    } catch {
-      razorpayErrorBody = "(could not read Razorpay error body)";
-    }
-    const failureReason = `Razorpay API returned HTTP ${razorpayResponse.status}: ${razorpayErrorBody}`;
+    const failureReason = `Razorpay API returned HTTP ${razorpayResponse.status}: ${razorpayResponseBody}`;
     console.error(failureReason);
+
+    // Try to extract actual Razorpay error description
+    let errorMessage = "Razorpay order creation failed. Please try again.";
+    try {
+      const parsedError = JSON.parse(razorpayResponseBody);
+      if (parsedError.error && typeof parsedError.error.description === "string") {
+        errorMessage = parsedError.error.description;
+      }
+    } catch {
+      // Keep default message if parsing fails
+    }
 
     // Update order's payment_status to failed.
     await supabase
@@ -324,10 +343,10 @@ Deno.serve(async (req: Request) => {
 
     return new Response(
       JSON.stringify({
-        error: "Razorpay order creation failed. Please try again.",
+        error: errorMessage,
         detail: failureReason,
       }),
-      { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { status: razorpayResponse.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 

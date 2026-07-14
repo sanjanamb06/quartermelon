@@ -7,8 +7,8 @@ import { corsHeaders } from "../_shared/cors.ts";
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 /** Kitchen coordinates (Quartermelon HQ). */
-const KITCHEN_LAT = 12.9737389;
-const KITCHEN_LNG = 77.580944;
+const KITCHEN_LAT = 12.953559507647197;
+const KITCHEN_LNG = 77.50152599923781;
 
 /** Delivery fee tiers (rupees). */
 const FEE_NEAR = 100;   // ≤ 10 km
