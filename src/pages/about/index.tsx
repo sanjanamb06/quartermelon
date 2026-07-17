@@ -70,27 +70,38 @@ const Story = () => (
 );
 
 // ─── Section 3 — Founder Card ─────────────────────────────────────────────────
+// ─── Section 3 — Founder Card ─────────────────────────────────────────────────
 const FounderCard = () => (
-  <section className="py-20 md:py-28" style={{ background: "hsl(30, 33%, 97%)" }}>
+  <section
+    className="py-20 md:py-28"
+    style={{ background: "hsl(30, 33%, 97%)" }}
+  >
     <div className="container max-w-lg">
-      <div className="bg-white rounded-2xl shadow-sm p-10 flex flex-col items-center text-center gap-5">
-        {/* Avatar */}
-        <div
-          className="w-20 h-20 rounded-full flex items-center justify-center text-3xl font-display font-bold text-white flex-shrink-0"
-          style={{ background: "hsl(348, 72%, 52%)" }}
-          aria-label="Founder initial D"
-        >
-          D
-        </div>
+      <div className="bg-white rounded-2xl shadow-sm p-10 flex flex-col items-center text-center gap-6">
+        {/* Founder Image */}
+        <img
+          src="/images/founder-img.jpeg"
+          alt="Dhanush, Founder of Quartermelon"
+          className="w-40 h-40 rounded-full object-cover shadow-md border-4 border-white"
+        />
 
         {/* Name & credentials */}
         <div>
-          <p className="font-display text-3xl text-foreground mb-1">Dhanush</p>
-          <p className="text-gray-500 text-sm mb-2">Founder, Quartermelon Hydrate</p>
+          <p className="font-display text-3xl text-foreground mb-1">
+            Dhanush
+          </p>
+
+          <p className="text-gray-500 text-sm mb-2">
+            Founder, Quartermelon Hydrate
+          </p>
+
           <p className="text-gray-400 text-xs italic mb-3">
             MSc Food Science · University of Padova, Italy
           </p>
-          <p className="text-gray-400 text-xs">📍 Bengaluru, India</p>
+
+          <p className="text-gray-400 text-xs">
+            📍 Bengaluru, India
+          </p>
         </div>
       </div>
     </div>
