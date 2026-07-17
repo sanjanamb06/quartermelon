@@ -12,7 +12,7 @@ const BUNDLE_META: Record<FixedBundleType, { description: string; coverImage: st
     coverImage: "/bundles-package/all-juice.png",
   },
   "all-shots": {
-    description: "Eight powerful wellness shots packed into two signature varieties. The perfect daily ritual to ignite your mornings with concentrated nutrition.",
+    description: "Eight cold-pressed wellness shots in two signature flavours. Packed with real fruit and vegetable goodness, they're an easy way to add a healthy boost to your mornings—one small shot at a time.",
     coverImage: "/bundles-package/all-shots.png",
   },
   "all-beverages": {

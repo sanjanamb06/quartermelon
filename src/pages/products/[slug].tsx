@@ -59,10 +59,10 @@ const ProductInfo = ({ product }: { product: (typeof products)[0] }) => (
         <span className="pdp-highlight">✓ No Added Sugar</span>
       )}
       {product.probiotics && (
-        <span className="pdp-highlight">✓ Live Probiotics</span>
+        <span className="pdp-highlight">✓ Live Prebiotics</span>
       )}
       {product.fiber && (
-        <span className="pdp-highlight">🌾 {product.fiber} Dietary Fiber</span>
+        <span className="pdp-highlight"> {product.fiber} Dietary Fiber</span>
       )}
     </div>
 
