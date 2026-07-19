@@ -12,11 +12,11 @@ const BUNDLE_META: Record<FixedBundleType, { description: string; coverImage: st
     coverImage: "/bundles-package/all-juice.png",
   },
   "all-shots": {
-    description: "Eight cold-pressed wellness shots in two signature flavours. Packed with real fruit and vegetable goodness, they're an easy way to add a healthy boost to your mornings—one small shot at a time.",
+    description: "Eight cold-pressed wellness shots in two signature flavours. Packed with real fruit and vegetable goodness, they're an easy way to add a healthy boost to your mornings one small shot at a time.",
     coverImage: "/bundles-package/all-shots.png",
   },
   "all-beverages": {
-    description: "The complete Quartermelon experience. Our full lineup of cold-pressed juices and wellness shots — everything you need for a vibrant, nourishing week.",
+    description: "The complete Quartermelon experience. Our full lineup of cold-pressed juices and wellness shots everything you need for a vibrant, nourishing week.",
     coverImage: "/bundles-package/all-beverages.png",
   },
 };
