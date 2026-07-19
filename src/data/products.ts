@@ -75,7 +75,7 @@ export const products: Product[] = [
     size: "180ml",
     tagline: "Bright, floral, and refreshingly tart. A sip of calm in every bottle.",
     ingredients: ["Lemon", "Butterfly Pea Flower", "Mint"],
-    price: 55,
+    price: 65,
     images: ["/products/purple-lemonade.png"],
     fiber: "5g",
     noAddedSugar: true,
