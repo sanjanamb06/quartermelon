@@ -1353,9 +1353,9 @@ const ReviewPage = () => {
                 {/* Email Address */}
                 <div>
                   <label htmlFor="rev-email" className="block text-sm font-medium mb-1.5" style={{ color: "#1A1A1A" }}>
-                    Email Address
+                    Email Address<span className="text-red-500">*</span>
                   </label>
-                  <input
+                  <input          
                     id="rev-email"
                     type="email"
                     value={email}
