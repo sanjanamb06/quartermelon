@@ -167,16 +167,7 @@ const Navbar = () => {
                   className="navbar-center-logo"
                   style={{ width: "auto", objectFit: "contain" }}
                 />
-                <span style={{
-                  fontSize: "7px",
-                  fontFamily: "PlusJakartaSans, sans-serif",
-                  fontWeight: 700,
-                  letterSpacing: "0.15em",
-                  textTransform: "uppercase",
-                  color: "#1A1A1A",
-                  textAlign: "center",
-                  whiteSpace: "nowrap"
-                }}>
+                <span className="navbar-slogan">
                   All the fruits your mom told you to eat
                 </span>
               </div>
@@ -232,34 +223,26 @@ const Navbar = () => {
         }}
       >
         {/* Drawer header */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 24px 16px", borderBottom: "1px solid rgba(0,0,0,0.08)" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 20px 10px", borderBottom: "1px solid rgba(0,0,0,0.08)" }}>
           <Link to="/" onClick={() => setMobileOpen(false)}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2px" }}>
               <img
                 src="/logo_title.png"
                 alt="Quartermelon"
-                style={{ height: "40px", width: "auto", objectFit: "contain" }}
+                className="navbar-drawer-logo"
+                style={{ width: "auto", objectFit: "contain" }}
               />
-              <span style={{
-                fontSize: "7px",
-                fontFamily: "PlusJakartaSans, sans-serif",
-                fontWeight: 700,
-                letterSpacing: "0.15em",
-                textTransform: "uppercase",
-                color: "#1A1A1A",
-                textAlign: "center",
-                whiteSpace: "nowrap"
-              }}>
+              <span className="navbar-slogan">
                 All the fruits your mom told you to eat
               </span>
             </div>
           </Link>
           <button
             onClick={() => setMobileOpen(false)}
-            style={{ padding: "8px", background: "none", border: "none", cursor: "pointer", color: "#1A1A1A" }}
+            style={{ padding: "6px", background: "none", border: "none", cursor: "pointer", color: "#1A1A1A" }}
             aria-label="Close menu"
           >
-            <X size={22} />
+            <X size={20} />
           </button>
         </div>
 
@@ -406,11 +389,28 @@ const Navbar = () => {
 
       <style>{`
         .navbar-center-logo {
-          height: 52px;
+          height: 33px;
+        }
+        .navbar-drawer-logo {
+          height: 27px;
+        }
+        .navbar-slogan {
+          font-size: 5.5px;
+          font-family: PlusJakartaSans, sans-serif;
+          font-weight: 700;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: #1A1A1A;
+          text-align: center;
+          white-space: nowrap;
         }
         @media (min-width: 768px) {
           .navbar-center-logo {
             height: 40px;
+          }
+          .navbar-slogan {
+            font-size: 7px;
+            letter-spacing: 0.15em;
           }
         }
 

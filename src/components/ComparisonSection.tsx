@@ -33,7 +33,7 @@ const ComparisonSection = () => {
 
           {/* Paragraph 2 */}
           <p className="cmp-para" style={{ marginBottom: "40px" }}>
-            Quartermelon is different. We cold-press real fruits and vegetables to preserve their natural goodness never using concentrates, added sugar syrups, or unnecessary additives. Just 50ml of raw, living nutrition with only 22 kcal per shot. Clean ingredients your body actually recognises.
+            Quartermelon is different. We cold-press real fruits and vegetables to preserve their natural goodness never using concentrates, added sugar syrups, or unnecessary additives. Clean ingredients your body actually recognises.
           </p>
 
           {/* CTA */}
