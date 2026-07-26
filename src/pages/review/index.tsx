@@ -11,6 +11,7 @@ import type {
   QuartermelonCart,
   FixedBundleLine,
   FixedBundleType,
+  CartMode,
 } from "@/data/bundles";
 
 // ─── Razorpay type declarations ──────────────────────────────────────────────
@@ -52,6 +53,53 @@ interface RazorpayInstance {
 // ─── Constants ───────────────────────────────────────────────────────────────
 const WHATSAPP_NUMBER = "916364471003"; // Support contact
 const APPS_SCRIPT_URL = import.meta.env.VITE_APPS_SCRIPT_URL;
+
+/**
+ * Builds the pre-filled WhatsApp message for a CUSTOM (Make Your Own) order.
+ * Called just before redirecting to wa.me so it uses the latest form state.
+ */
+function buildWhatsAppMessage(
+  customBundle: QuartermelonCart["customBundle"],
+  customerDetails: {
+    name: string;
+    phone: string;
+    addressLine1: string;
+    addressLine2: string;
+    landmark: string;
+    pincode: string;
+  }
+): string {
+  const { name, phone, addressLine1, addressLine2, landmark, pincode } = customerDetails;
+
+  const itemLines = (customBundle?.items ?? [])
+    .map((item) => `- ${item.name} ×${item.quantity}`)
+    .join("\n");
+
+  const addressParts = [
+    addressLine1.trim(),
+    addressLine2.trim(),
+    landmark.trim() || null,
+    pincode.trim(),
+  ]
+    .filter(Boolean)
+    .join(", ");
+
+  return [
+    "Hello Quartermelon! 🍉",
+    "",
+    "I'd like to place an order.",
+    "",
+    `*Name:* ${name.trim()}`,
+    `*Phone:* ${phone.trim()}`,
+    "",
+    "*Selected Bottles:*",
+    itemLines,
+    "",
+    `*Delivery Address:* ${addressParts}`,
+    "",
+    "Thank you!",
+  ].join("\n");
+}
 
 /** Supabase Edge Function base URL, derived from the Supabase project URL. */
 const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL as string)
@@ -170,6 +218,9 @@ const ReviewPage = () => {
   const [incompleteCustomBundle, setIncompleteCustomBundle] = useState(false);
   const [customBundleTotal, setCustomBundleTotal] = useState<number | null>(null);
   const [customBundleMinError, setCustomBundleMinError] = useState<number | null>(null);
+
+  /** Derived from cart.mode — single source of truth for checkout branching. */
+  const cartMode: CartMode = cart?.mode ?? null;
 
   // ── UI state ──
   const [orderId, setOrderId] = useState("");
@@ -330,7 +381,7 @@ const ReviewPage = () => {
       setCart(null);
       setCartEmpty(true);
     } else {
-      writeCart({ fixedLines: newLines, customBundle: newCart.customBundle });
+      writeCart({ mode: newCart.mode, fixedLines: newLines, customBundle: newCart.customBundle });
       setCart({ ...newCart, savedAt: Date.now() });
     }
   };
@@ -452,6 +503,10 @@ const ReviewPage = () => {
   // ── Step 2: Geocode + advance to Step 3 ──
   const handleContinueToStep3 = async () => {
     if (!validateAll()) return;
+    if (cartMode === "CUSTOM") {
+      setStep(3);
+      return;
+    }
     setGeocoding(true);
     try {
       const res = await fetch(
@@ -1017,7 +1072,7 @@ const ReviewPage = () => {
             </div>
 
             {/* ── Promotional nudge card (custom bundle within 700–998) ── */}
-            {showPromo && (
+            {showPromo && cartMode === "ASSORTED" && (
               <div
                 className="relative rounded-none p-5 mb-6 shadow-sm border-l-4"
                 style={{ background: "rgba(254, 199, 111, 0.2)", borderLeftColor: "#fec76f" }}
@@ -1171,14 +1226,17 @@ const ReviewPage = () => {
                             {item.quantity}
                           </span>
                           <span className="flex-1 text-sm" style={{ color: "#1A1A1A" }}>{item.name}</span>
-                          <span className="text-sm font-semibold" style={{ color: "#1A1A1A" }}>
-                            ₹{(item.price * item.quantity).toLocaleString()}
-                          </span>
+                          {cartMode === "ASSORTED" && (
+                            <span className="text-sm font-semibold" style={{ color: "#1A1A1A" }}>
+                              ₹{(item.price * item.quantity).toLocaleString()}
+                            </span>
+                          )}
                         </div>
                       ))}
                     </div>
 
                     {/* Custom subtotal + optional discount */}
+                    {cartMode === "ASSORTED" && (
                     <div className="flex flex-col gap-1.5 border-t pt-2" style={{ borderColor: "rgba(26,26,26,0.08)" }}>
                       {customDiscountUnlocked ? (
                         <>
@@ -1210,11 +1268,13 @@ const ReviewPage = () => {
                         </div>
                       )}
                     </div>
+                    )}
                   </div>
                 )}
               </div>
 
               {/* ── Final pricing breakdown ── */}
+              {cartMode === "ASSORTED" && (
               <div
                 className="px-5 pb-5 border-t pt-4 flex flex-col gap-2"
                 style={{ borderColor: "rgba(26,26,26,0.15)" }}
@@ -1252,6 +1312,7 @@ const ReviewPage = () => {
                   </span>
                 </div>
               </div>
+              )}
             </div>
 
             {/* ── Confirm Order button ── */}
@@ -1294,7 +1355,9 @@ const ReviewPage = () => {
               style={{ background: "rgba(197, 216, 48, 0.12)", border: "1px solid rgba(26,26,26,0.1)" }}
             >
               <span className="text-sm font-medium" style={{ color: "#1A1A1A" }}>
-                Order: ₹{subtotal.toLocaleString()} + delivery
+                {cartMode === "CUSTOM"
+                  ? `${customBundleTotal ?? 0} item${(customBundleTotal ?? 0) !== 1 ? "s" : ""} selected`
+                  : `Order: ₹${subtotal.toLocaleString()} + delivery`}
               </span>
               <ShoppingBag size={16} style={{ color: "#2d4920" }} />
             </div>
@@ -1522,7 +1585,7 @@ const ReviewPage = () => {
                   </div>
                 )}
 
-                {/* Custom bundle */}
+                {/* Custom bundle — Step 3 compact view */}
                 {cart.customBundle && cart.customBundle.items.length > 0 && (
                   <div className="flex flex-col gap-2">
                     <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "rgba(26,26,26,0.45)" }}>
@@ -1533,12 +1596,14 @@ const ReviewPage = () => {
                         <span style={{ color: "rgba(26,26,26,0.7)" }}>
                           {item.name} × {item.quantity}
                         </span>
-                        <span style={{ color: "#1A1A1A" }}>
-                          ₹{(item.price * item.quantity).toLocaleString()}
-                        </span>
+                        {cartMode === "ASSORTED" && (
+                          <span style={{ color: "#1A1A1A" }}>
+                            ₹{(item.price * item.quantity).toLocaleString()}
+                          </span>
+                        )}
                       </div>
                     ))}
-                    {customDiscountUnlocked && (
+                    {customDiscountUnlocked && cartMode === "ASSORTED" && (
                       <div className="flex justify-between text-sm pl-3">
                         <span className="font-medium" style={{ color: "#2d4920" }}>10% discount</span>
                         <span className="font-semibold" style={{ color: "#2d4920" }}>−₹{customDiscount}</span>
@@ -1547,7 +1612,8 @@ const ReviewPage = () => {
                   </div>
                 )}
 
-                {/* Subtotal */}
+                {/* Subtotal — only for ASSORTED */}
+                {cartMode === "ASSORTED" && (
                 <div
                   className="flex justify-between text-sm border-t pt-2"
                   style={{ borderColor: "rgba(26,26,26,0.08)" }}
@@ -1555,6 +1621,7 @@ const ReviewPage = () => {
                   <span style={{ color: "rgba(26,26,26,0.6)" }}>Subtotal</span>
                   <span className="font-semibold" style={{ color: "#1A1A1A" }}>₹{subtotal.toLocaleString()}</span>
                 </div>
+                )}
               </div>
             </div>
 
@@ -1573,12 +1640,14 @@ const ReviewPage = () => {
                 <p>{pincode}</p>
               </div>
 
-              <div className="mt-4 flex justify-between text-sm">
-                <span style={{ color: "rgba(26,26,26,0.6)" }}>Delivery fee</span>
-                <span className="font-semibold" style={{ color: "#1A1A1A" }}>₹{currentDeliveryFee}</span>
-              </div>
+              {cartMode === "ASSORTED" && (
+                <div className="mt-4 flex justify-between text-sm">
+                  <span style={{ color: "rgba(26,26,26,0.6)" }}>Delivery fee</span>
+                  <span className="font-semibold" style={{ color: "#1A1A1A" }}>₹{currentDeliveryFee}</span>
+                </div>
+              )}
 
-              {geocodeResult.geocodeStatus === "failed" && (
+              {cartMode === "ASSORTED" && geocodeResult.geocodeStatus === "failed" && (
                 <p className="text-xs mt-2 px-3 py-2 rounded-none" style={{ background: "rgba(254, 199, 111, 0.2)", color: "rgba(26,26,26,0.7)" }}>
                   We couldn't verify your address automatically. Our team will confirm delivery details with you before dispatch.
                 </p>
@@ -1586,6 +1655,7 @@ const ReviewPage = () => {
             </div>
 
             {/* ── Total ── */}
+            {cartMode === "ASSORTED" && (
             <div
               className="rounded-none shadow-sm p-5 mb-6"
               style={{ background: "rgba(197, 216, 48, 0.08)", border: "1px solid rgba(26,26,26,0.15)" }}
@@ -1597,9 +1667,10 @@ const ReviewPage = () => {
                 </span>
               </div>
             </div>
+            )}
 
             {/* ── Payment error ── */}
-            {paymentError && (
+            {paymentError && cartMode === "ASSORTED" && (
               <div
                 className="mb-4 rounded-none px-4 py-3 text-sm flex items-start justify-between gap-3"
                 style={{
@@ -1621,22 +1692,52 @@ const ReviewPage = () => {
               </div>
             )}
 
-            {/* ── Pay button ── */}
-            <button
-              id="pay-order-btn"
-              onClick={() => { void handlePay(); }}
-              disabled={paying}
-              className={[
-                "w-full flex items-center justify-center gap-3 rounded-none py-4 text-base font-semibold transition-all duration-200",
-                paying ? "pointer-events-none opacity-70" : "hover:opacity-90 shadow-md",
-              ].join(" ")}
-              style={{ background: "#f5945c", color: "#1A1A1A" }}
-            >
-              {paying ? "Processing…" : `Pay ₹${orderTotal.toLocaleString()} →`}
-            </button>
-            <p className="text-center text-xs mt-3" style={{ color: "rgba(41, 40, 39, 0.6)" }}>
-              Secured by Razorpay · UPI, cards &amp; netbanking accepted
-            </p>
+            {/* ── CTA: WhatsApp (CUSTOM) or Pay (ASSORTED) ── */}
+            {cartMode === "CUSTOM" ? (
+              <>
+                <p className="text-sm mb-3" style={{ color: "#1E331E" }}>
+                  Tap below to send us your order on WhatsApp — we'll confirm pricing and availability there.
+                </p>
+                <button
+                  id="whatsapp-order-btn"
+                  type="button"
+                  onClick={() => {
+                    const message = buildWhatsAppMessage(cart.customBundle, {
+                      name, phone, addressLine1, addressLine2, landmark, pincode,
+                    });
+                    window.location.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+                  }}
+                  className="w-full flex items-center justify-center gap-3 rounded-none py-4 text-base font-semibold transition-all duration-200 hover:opacity-90 shadow-md"
+                  style={{ background: "#ffffff", color: "#1E331E", border: "1.5px solid #000000" }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                  </svg>
+                  Order on WhatsApp →
+                </button>
+                <p className="text-center text-xs mt-3" style={{ color: "rgba(41, 40, 39, 0.6)" }}>
+                  We’ll confirm your order and delivery details over WhatsApp.
+                </p>
+              </>
+            ) : (
+              <>
+                <button
+                  id="pay-order-btn"
+                  onClick={() => { void handlePay(); }}
+                  disabled={paying}
+                  className={[
+                    "w-full flex items-center justify-center gap-3 rounded-none py-4 text-base font-semibold transition-all duration-200",
+                    paying ? "pointer-events-none opacity-70" : "hover:opacity-90 shadow-md",
+                  ].join(" ")}
+                  style={{ background: "#f5945c", color: "#1A1A1A" }}
+                >
+                  {paying ? "Processing…" : `Pay ₹${orderTotal.toLocaleString()} →`}
+                </button>
+                <p className="text-center text-xs mt-3" style={{ color: "rgba(41, 40, 39, 0.6)" }}>
+                  Secured by Razorpay · UPI, cards &amp; netbanking accepted
+                </p>
+              </>
+            )}
           </>
         )}
       </main>

@@ -3,8 +3,9 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { Minus, Plus, ChevronLeft, Snowflake, Leaf, Thermometer } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import FooterSection from "@/components/FooterSection";
-import { PRESET_BUNDLES, readCart, writeCart } from "@/data/bundles";
+import { PRESET_BUNDLES, readCart, writeCart, canAddToCart, clearCartAndSetMode } from "@/data/bundles";
 import type { FixedBundleType } from "@/data/bundles";
+import CartConflictModal from "@/components/CartConflictModal";
 
 const BUNDLE_META: Record<FixedBundleType, { description: string; coverImage: string }> = {
   "all-juice": {
@@ -37,6 +38,33 @@ const PackageDetailPage = () => {
 
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
+  const [showConflict, setShowConflict] = useState(false);
+
+  /** Performs the actual cart write — extracted so it can be called after conflict resolution too. */
+  const doAddToCart = () => {
+    try {
+      const existing = readCart();
+      const fixedLines = existing?.fixedLines ?? [];
+      const customBundle = existing?.customBundle ?? null;
+      const already = fixedLines.find((l) => l.bundleType === bundleType);
+      const newLines = already
+        ? fixedLines.map((l) => l.bundleType === bundleType ? { ...l, quantity: l.quantity + qty } : l)
+        : [...fixedLines, { bundleType, displayName: def.displayName, quantity: qty, unitPrice: def.unitPrice }];
+      writeCart({ mode: "ASSORTED", fixedLines: newLines, customBundle });
+      window.dispatchEvent(new Event("storage"));
+      setAdded(true);
+      setTimeout(() => setAdded(false), 2000);
+    } catch { /* ignore */ }
+  };
+
+  const handleAddToCart = () => {
+    const existing = readCart();
+    if (!canAddToCart(existing, "ASSORTED")) {
+      setShowConflict(true);
+      return;
+    }
+    doAddToCart();
+  };
 
   if (!def) {
     return (
@@ -51,24 +79,20 @@ const PackageDetailPage = () => {
     );
   }
 
-  const handleAddToCart = () => {
-    try {
-      const existing = readCart();
-      const fixedLines = existing?.fixedLines ?? [];
-      const customBundle = existing?.customBundle ?? null;
-      const already = fixedLines.find((l) => l.bundleType === bundleType);
-      const newLines = already
-        ? fixedLines.map((l) => l.bundleType === bundleType ? { ...l, quantity: l.quantity + qty } : l)
-        : [...fixedLines, { bundleType, displayName: def.displayName, quantity: qty, unitPrice: def.unitPrice }];
-      writeCart({ fixedLines: newLines, customBundle });
-      window.dispatchEvent(new Event("storage"));
-      setAdded(true);
-      setTimeout(() => setAdded(false), 2000);
-    } catch { /* ignore */ }
-  };
-
   return (
     <>
+      {showConflict && (
+        <CartConflictModal
+          currentMode="CUSTOM"
+          onDismiss={() => setShowConflict(false)}
+          onSwitch={() => {
+            clearCartAndSetMode("ASSORTED");
+            window.dispatchEvent(new Event("storage"));
+            setShowConflict(false);
+            doAddToCart();
+          }}
+        />
+      )}
       <Navbar />
       <main className="bd-page">
         <div className="bd-breadcrumb">

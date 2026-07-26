@@ -4,10 +4,19 @@
 //
 // Shape overview:
 //   {
+//     mode: CartMode,                   // "ASSORTED" | "CUSTOM" | null
 //     fixedLines: FixedBundleLine[],   // one entry per pre-set bundle type selected
 //     customBundle: CustomBundle | null, // the "Make Your Own" selection, or null
 //     savedAt: number,                  // Unix ms timestamp for freshness checks
 //   }
+
+/**
+ * Determines which checkout path the cart is committed to.
+ *  - "ASSORTED" : one or more pre-set bundles → Razorpay payment
+ *  - "CUSTOM"   : Make Your Own selection → WhatsApp order
+ *  - null       : cart is empty / mode not yet decided
+ */
+export type CartMode = "ASSORTED" | "CUSTOM" | null;
 
 /** The three pre-set bundle identifiers. */
 export type FixedBundleType = "all-juice" | "all-shots" | "all-beverages";
@@ -48,6 +57,12 @@ export interface CustomBundle {
 
 /** The full cart object stored in localStorage as "quartermelon_cart". */
 export interface QuartermelonCart {
+  /**
+   * Which checkout path this cart is committed to.
+   * Derived from contents on read for backward compatibility with existing
+   * localStorage data that predates this field.
+   */
+  mode: CartMode;
   /** Selected pre-set bundles. Multiple types can coexist; same type accumulates quantity. */
   fixedLines: FixedBundleLine[];
   /**
@@ -126,15 +141,36 @@ export const CART_KEY = "quartermelon_cart";
 export const CART_TTL_MS = 3_600_000;
 
 /**
+ * Derives the CartMode from cart contents.
+ * Used internally by readCart for backward-compat migration.
+ * If both fixedLines and customBundle are present (legacy mixed state),
+ * ASSORTED takes precedence and customBundle is discarded on next write.
+ */
+function deriveMode(
+  fixedLines: FixedBundleLine[],
+  customBundle: CustomBundle | null,
+  persisted: CartMode | undefined
+): CartMode {
+  // Trust the persisted value if it's already there
+  if (persisted === "ASSORTED" || persisted === "CUSTOM") return persisted;
+  // Derive from contents for legacy carts
+  if (fixedLines.length > 0) return "ASSORTED";
+  if (customBundle !== null && customBundle.items.length > 0) return "CUSTOM";
+  return null;
+}
+
+/**
  * Reads the current cart from localStorage.
  * Returns null if the key is absent, unparseable, or the savedAt timestamp
  * is older than CART_TTL_MS.
+ * Always returns a cart with `mode` populated — derived from contents when
+ * the persisted field is absent (backward-compat migration).
  */
 export function readCart(): QuartermelonCart | null {
   try {
     const raw = localStorage.getItem(CART_KEY);
     if (!raw) return null;
-    const parsed = JSON.parse(raw) as Partial<QuartermelonCart>;
+    const parsed = JSON.parse(raw) as Partial<QuartermelonCart> & { mode?: CartMode };
 
     // Basic shape guard — new cart shape requires fixedLines array
     if (!Array.isArray(parsed.fixedLines)) return null;
@@ -143,11 +179,11 @@ export function readCart(): QuartermelonCart | null {
     // Freshness check
     if (Date.now() - parsed.savedAt > CART_TTL_MS) return null;
 
-    return {
-      fixedLines: parsed.fixedLines,
-      customBundle: parsed.customBundle ?? null,
-      savedAt: parsed.savedAt,
-    };
+    const fixedLines = parsed.fixedLines;
+    const customBundle = parsed.customBundle ?? null;
+    const mode = deriveMode(fixedLines, customBundle, parsed.mode);
+
+    return { mode, fixedLines, customBundle, savedAt: parsed.savedAt };
   } catch {
     return null;
   }
@@ -160,6 +196,27 @@ export function readCart(): QuartermelonCart | null {
 export function writeCart(cart: Omit<QuartermelonCart, "savedAt">): void {
   const full: QuartermelonCart = { ...cart, savedAt: Date.now() };
   localStorage.setItem(CART_KEY, JSON.stringify(full));
+}
+
+/**
+ * Returns true if the incoming cart mode is compatible with the current cart.
+ * A null (empty) cart always allows any mode.
+ * Blocks when the cart already has items committed to a different mode.
+ */
+export function canAddToCart(
+  cart: QuartermelonCart | null,
+  incomingMode: "ASSORTED" | "CUSTOM"
+): boolean {
+  if (!cart || cart.mode === null) return true;
+  return cart.mode === incomingMode;
+}
+
+/**
+ * Clears the entire cart and writes a fresh empty cart with the given mode.
+ * Call this when the user confirms they want to switch order types.
+ */
+export function clearCartAndSetMode(newMode: "ASSORTED" | "CUSTOM"): void {
+  writeCart({ mode: newMode, fixedLines: [], customBundle: null });
 }
 
 /**

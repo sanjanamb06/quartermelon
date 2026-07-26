@@ -73,7 +73,6 @@ const ProblemSection = () => {
               {/* Info */}
               <div className="bs-info">
                 <h3 className="bs-name">{product.name}</h3>
-                <span className="bs-price">₹{product.price}</span>
               </div>
             </Link>
           ))}

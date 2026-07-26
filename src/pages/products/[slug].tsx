@@ -50,9 +50,6 @@ const ProductInfo = ({ product }: { product: (typeof products)[0] }) => (
     {/* Tagline */}
     <p className="pdp-tagline">{product.tagline}</p>
 
-    {/* Price */}
-    <div className="pdp-price">₹{product.price}</div>
-
     {/* Highlights */}
     <div className="pdp-highlights">
       {product.noAddedSugar && (

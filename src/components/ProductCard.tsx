@@ -29,7 +29,6 @@ const ProductCard = ({ product }: ProductCardProps) => {
       {/* Content area */}
       <div className="pc-content">
         <h3 className="pc-name">{product.name}</h3>
-        <span className="pc-price">₹{product.price}</span>
         <span className="pc-size">{product.size} · {product.category === "daily-juice" ? "Daily Bottle" : "Wellness Shot"}</span>
       </div>
 

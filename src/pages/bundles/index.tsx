@@ -9,8 +9,11 @@ import {
   buildCustomBundle,
   readCart,
   writeCart,
+  canAddToCart,
+  clearCartAndSetMode,
   CART_KEY,
 } from "@/data/bundles";
+import CartConflictModal from "@/components/CartConflictModal";
 
 declare global {
   interface Window {
@@ -55,11 +58,19 @@ const BundlesPage = () => {
   const [items, setItems] = useState<ItemMap>(initialItems);
   const [ctaPulse, setCtaPulse] = useState(false);
   const prevTotalRef = useRef(0);
+  const [showConflict, setShowConflict] = useState(false);
 
-  // â”€â”€ Restore custom bundle items from cart on mount â”€â”€
+  // ── Restore custom bundle items from cart on mount ──
   useEffect(() => {
     try {
       const cart = readCart();
+
+      // Show conflict modal if cart is already committed to ASSORTED
+      if (!canAddToCart(cart, "CUSTOM")) {
+        setShowConflict(true);
+        return;
+      }
+
       if (!cart?.customBundle) return;
 
       const restored: ItemMap = { ...initialItems };
@@ -103,7 +114,7 @@ const BundlesPage = () => {
     prevTotalRef.current = customBundleTotal;
   }, [customBundleTotal]);
 
-  // â”€â”€ Persist only the customBundle portion of the cart on every items change â”€â”€
+  // ── Persist only the customBundle portion of the cart on every items change ──
   // Reads existing cart to preserve fixedLines set by the /packages page.
   useEffect(() => {
     try {
@@ -126,10 +137,10 @@ const BundlesPage = () => {
       );
 
       if (fixedLines.length === 0 && customBundle === null) {
-        // Nothing in cart at all â€” remove the key to keep localStorage clean
+        // Nothing in cart at all ─ remove the key to keep localStorage clean
         localStorage.removeItem(CART_KEY);
       } else {
-        writeCart({ fixedLines, customBundle });
+        writeCart({ mode: "CUSTOM", fixedLines, customBundle });
       }
     } catch {
       // ignore
@@ -143,7 +154,7 @@ const BundlesPage = () => {
   const gridProducts = bundleProducts.filter((product) => product.slug !== "lemonade-pink");
 
   const increment = (slug: string) => {
-    // No upper cap â€” any total is allowed
+    // No upper cap ─ any total is allowed
     setItems((prev) => ({ ...prev, [slug]: prev[slug] + 1 }));
   };
 
@@ -178,7 +189,7 @@ const BundlesPage = () => {
           })
         )
       );
-      writeCart({ fixedLines, customBundle });
+      writeCart({ mode: "CUSTOM", fixedLines, customBundle });
     } catch {
       // ignore
     }
@@ -190,13 +201,6 @@ const BundlesPage = () => {
     });
     navigate("/review");
   };
-
-  // â”€â”€ Running subtotal (sum of price Ã— qty for each item) â”€â”€
-  const runningTotal = BUNDLE_PRODUCTS.reduce((sum, slug) => {
-    const qty = items[slug] ?? 0;
-    const price = products.find((p) => p.slug === slug)?.price ?? 0;
-    return sum + qty * price;
-  }, 0);
 
   // Items added to box
   const addedItems = Object.entries(items).filter(([, qty]) => qty > 0);
@@ -223,9 +227,7 @@ const BundlesPage = () => {
                 </div>
                 <div className="bun-box-item-info">
                   <span className="bun-box-item-name">{p.name}</span>
-                  <span className="bun-box-item-meta">
-                    ×{qty} · {formatINR(qty * p.price)}
-                  </span>
+                  <span className="bun-box-item-meta">×{qty}</span>
                 </div>
                 <button
                   onClick={() => removeAll(slug)}
@@ -257,21 +259,6 @@ const BundlesPage = () => {
         </span>
       </div>
 
-      <div className="bun-box-total">
-        <div className="bun-box-total-row">
-          <span>Subtotal</span>
-          <span className="bun-box-total-price">{formatINR(runningTotal)}</span>
-        </div>
-        {runningTotal >= 999 && (
-          <p className="bun-box-total-note">10% discount unlocked at checkout!</p>
-        )}
-        {runningTotal > 0 && runningTotal < 999 && (
-          <p className="bun-box-total-note-hint">
-            Add {formatINR(999 - runningTotal)} more to unlock 10% off
-          </p>
-        )}
-      </div>
-
       <button
         type="button"
         className={`bun-view-cart-btn ${canProceed ? "bun-view-cart-btn-active" : "bun-view-cart-btn-disabled"} ${ctaPulse ? "bun-view-cart-btn-pulse" : ""}`}
@@ -285,6 +272,17 @@ const BundlesPage = () => {
 
   return (
     <>
+      {showConflict && (
+        <CartConflictModal
+          currentMode="ASSORTED"
+          onDismiss={() => { navigate("/packages"); }}
+          onSwitch={() => {
+            clearCartAndSetMode("CUSTOM");
+            window.dispatchEvent(new Event("storage"));
+            setShowConflict(false);
+          }}
+        />
+      )}
       <Navbar />
 
       <main className="bun-page">
@@ -296,10 +294,13 @@ const BundlesPage = () => {
               <h1 className="bun-title">Make Your Own Bundle</h1>
               <p className="bun-sub">
                 Mix and match your favourites!{" "}
-                <strong>Minimum {MIN_BOTTLES} items.</strong>{" "}
-                Spend {formatINR(999)}+ to unlock a{" "}
-                <strong>10% discount</strong> at checkout.
+                <strong>Minimum {MIN_BOTTLES} items.</strong>
               </p>
+            </div>
+
+            {/* Persistent pricing notice */}
+            <div className="bun-pricing-notice">
+              Pricing for custom bundles is confirmed over WhatsApp based on your selection. Build your bundle, and we'll get back to you with the total.
             </div>
 
             {/* Product Grid */}
@@ -329,7 +330,6 @@ const BundlesPage = () => {
                     {/* Info */}
                     <h3 className="bun-card-name">{product.name}</h3>
                     <p className="bun-card-tagline">{product.tagline}</p>
-                    <span className="bun-card-price">{formatINR(product.price)}</span>
 
                     {/* Button */}
                     {qty > 0 ? (
@@ -422,6 +422,17 @@ const BundlesPage = () => {
           margin: 0;
         }
         .bun-sub strong { color: #1a1a1a; }
+
+        .bun-pricing-notice {
+          background: #ffffff;
+          border: 1px solid #1E331E;
+          border-radius: 0;
+          color: #1E331E;
+          font-size: 0.85rem;
+          line-height: 1.45;
+          padding: 12px 16px;
+          margin-bottom: 24px;
+        }
 
         .bun-grid {
           display: grid;
