@@ -100,7 +100,7 @@ export const PRESET_BUNDLES: Record<FixedBundleType, PresetBundleDefinition> = {
   "all-juice": {
     type: "all-juice",
     displayName: "All Juice Bundle",
-    unitPrice: 349,
+    unitPrice: 499,
     items: [
       { slug: "watermelon-sabja", name: "Watermelon + Sabja",      quantity: 1 },
       { slug: "lemonade-purple",  name: "Purple Lemonade",         quantity: 2 },
@@ -111,7 +111,7 @@ export const PRESET_BUNDLES: Record<FixedBundleType, PresetBundleDefinition> = {
   "all-shots": {
     type: "all-shots",
     displayName: "All Shots Bundle",
-    unitPrice: 349,
+    unitPrice: 499,
     items: [
       { slug: "turmeric-shot", name: "Turmeric Shot", quantity: 4 },
       { slug: "abc-shot",      name: "ABC Shot",       quantity: 4 },
@@ -120,7 +120,7 @@ export const PRESET_BUNDLES: Record<FixedBundleType, PresetBundleDefinition> = {
   "all-beverages": {
     type: "all-beverages",
     displayName: "All Beverages Bundle",
-    unitPrice: 449,
+    unitPrice: 599,
     items: [
       { slug: "watermelon-sabja", name: "Watermelon + Sabja",      quantity: 1 },
       { slug: "lemonade-purple",  name: "Purple Lemonade",         quantity: 2 },

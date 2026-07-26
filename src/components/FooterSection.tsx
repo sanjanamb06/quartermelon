@@ -72,6 +72,17 @@ const FooterSection = () => {
         <div className="footer-bottom">
           <p>FSSAI License: 21226186000879 | © 2026 Quartermelon Foods Pvt. Ltd. All rights reserved.</p>
         </div>
+        <div className="footer-credit">
+          Developed by{" "}
+          <a
+            href="https://www.linkedin.com/in/sanjana-mb"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="footer-credit-link"
+          >
+            Sanjana M B
+          </a>
+        </div>
       </footer>
 
       <style>{`
@@ -186,6 +197,28 @@ const FooterSection = () => {
           border-top: 1px solid rgba(255,255,255,0.1);
           text-align: center;
           font-size: 0.75rem;
+        }
+        .footer-credit {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 14px 24px 0;
+          border-top: 1px solid rgba(255,255,255,0.08);
+          margin-top: 12px;
+          text-align: center;
+          font-size: 0.75rem;
+          color: rgba(255,255,255,0.4);
+          border-radius: 0;
+        }
+        .footer-credit-link {
+          color: rgba(255,255,255,0.55);
+          text-decoration: underline;
+          text-underline-offset: 2px;
+          text-decoration-color: rgba(255,255,255,0.25);
+          transition: color 0.2s, text-decoration-color 0.2s;
+        }
+        .footer-credit-link:hover {
+          color: rgba(255,255,255,0.85);
+          text-decoration-color: rgba(255,255,255,0.5);
         }
 
         @media (max-width: 768px) {
