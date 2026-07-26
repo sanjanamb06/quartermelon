@@ -15,7 +15,7 @@ Quartermelon is a Bengaluru-based cold pressed juice brand delivering fresh, nat
 - Pineapple + Sabja (Pine Kick)
 - Pineapple + Gond Katira
 
-**Wellness Shots — 50ml**
+**Wellness Shots — 60ml**
 - Turmeric Shot — Turmeric, Ginger, Orange, Pineapple, Lime, Black Pepper
 - ABC Shot — Apple, Beetroot, Carrot
 

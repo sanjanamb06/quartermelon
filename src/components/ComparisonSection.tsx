@@ -193,7 +193,7 @@ export default ComparisonSection;
 //           {/* Paragraph 2 */}
 //           <p className="cmp-para" style={{ marginBottom: "40px" }}>
 //             That's why Quartermelon cold-presses real Apple, Beetroot & Carrot,
-//             no concentrates, no syrups, no shortcuts. Just 50ml of raw,
+//             no concentrates, no syrups, no shortcuts. Just 60ml of raw,
 //             living nutrition with only 22 kcal per shot. Ingredients your gut
 //             actually recognises.
 //           </p>

@@ -6,7 +6,7 @@ export interface Product {
   slug: string;
   name: string;
   category: ProductCategory;
-  size: "180ml" | "50ml";
+  size: "180ml" | "60ml";
   tagline: string;
   ingredients: string[];
   price: number;
@@ -112,14 +112,14 @@ export const products: Product[] = [
     probiotics: false,
     availability: "out",
   },
-  // --- Wellness Shots — 50ml ---
+  // --- Wellness Shots — 60ml ---
   {
     id: "7",
     slug: "turmeric-shot",
     name: "Turmeric Shot",
     category: "wellness-shot",
-    size: "50ml",
-    tagline: "Inflammation's worst nightmare in 50ml. Fire up your morning.",
+    size: "60ml",
+    tagline: "Inflammation's worst nightmare in 60ml. Fire up your morning.",
     ingredients: ["Turmeric", "Ginger", "Orange", "Pineapple", "Lime", "Black Pepper"],
     price: 49,
     images: ["/products/turmeric-shot.png"],
@@ -132,7 +132,7 @@ export const products: Product[] = [
     slug: "abc-shot",
     name: "ABC Shot",
     category: "wellness-shot",
-    size: "50ml",
+    size: "60ml",
     tagline: "Apple, Beetroot, Carrot. Elementary nutrition. Extra ordinary results.",
     ingredients: ["Apple", "Beetroot", "Carrot"],
     price: 49,

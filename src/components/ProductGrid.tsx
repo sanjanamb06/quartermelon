@@ -39,7 +39,7 @@ const products: ProductCardItem[] = [
     name: "ABC Shot",
     subtitle: "Apple, Beetroot, Carrot",
     price: "₹35",
-    pack: "50ml / wellness shot",
+    pack: "60ml / wellness shot",
     image: "/products/abc.png",
   },
   {
@@ -47,7 +47,7 @@ const products: ProductCardItem[] = [
     name: "Turmeric Shot",
     subtitle: "Anti-inflammatory fire",
     price: "₹35",
-    pack: "50ml / wellness shot",
+    pack: "60ml / wellness shot",
     image: "/products/turmeric.png",
   },
   {

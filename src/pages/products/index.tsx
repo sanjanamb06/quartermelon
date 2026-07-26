@@ -37,7 +37,7 @@ const ProductsPage = () => {
           <section className="products-section">
             <div className="products-section-header">
               <h2 className="products-section-title">Wellness Shots</h2>
-              <span className="products-section-badge">50ml</span>
+              <span className="products-section-badge">60ml</span>
             </div>
             <div className="products-grid">
               {wellnessShots.map((product) => (
